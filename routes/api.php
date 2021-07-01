@@ -19,10 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('login-user', [LoginRegisterController::class, 'authenticate'])->name('login');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('getData/', [DataController::class, 'get'])->name('get-data');
-    Route::get('filter/{param}', [DataController::class, 'filter'])->name('filter');
-});
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+  Route::get('getData/', [DataController::class, 'get'])->name('get-data');
+  Route::get('filter/{param}', [DataController::class, 'filter'])->name('filter');
+  Route::get('logout-user', [LoginRegisterController::class, 'logout']);
 });
