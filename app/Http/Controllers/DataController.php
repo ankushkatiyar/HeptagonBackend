@@ -30,39 +30,44 @@ class DataController extends Controller
 
   public function filter($param = '')
   {
-    $data_source = '[{
-			"id": 1,
-			"title": "Lorem ipsum",
-			"description": {
-			  "desc1": "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
-			  "desc2": "Lorem Ipsum is simply dummy",
-			  "desc3": "Lorem Ipsum is"
-			},
-			"date": "2021-06-01",
-			"score": "0.3"
+    $data_source = '[
+      {
+        "id": 1,
+        "title": "Lorem ipsum",
+        "description": {
+          "desc1": "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+          "desc2": "Lorem Ipsum is simply dummy",
+          "desc3": "Lorem Ipsum is"
+        },
+        "date": "2021-06-01",
+        "score": "0.3",
+        "matched":[]
 		  },
 		  {
-			"id": 2,
-			"title": "Lorem",
-			"description": {
-			  "desc1": "Lorem Ipsum is simply dummy demo text of the printing and typesetting industry",
-			  "desc2": "Lorem Ipsum is simply dummy data",
-			  "desc3": "Lorem Ipsum"
-			},
-			"date": "2021-06-02",
-			"score": "1.3"
+        "id": 2,
+        "title": "Lorem",
+        "description": {
+          "desc1": "Lorem Ipsum is simply dummy demo text of the printing and typesetting industry",
+          "desc2": "Lorem Ipsum is simply dummy data",
+          "desc3": "Lorem Ipsum"
+        },
+        "date": "2021-06-02",
+        "score": "1.3",
+        "matched":[]
 		  },
 		  {
-			"id": 3,
-			"title": "Lorem title",
-			"description": {
-			  "desc1": "Contrary to popular belief, Lorem Ipsum is not simply random text",
-			  "desc2": "Contrary to popular to",
-			  "desc3": "Lorem Ipsum simply"
-			},
-			"date": "2021-06-03",
-			"score": "5.3"
-		  }]';
+        "id": 3,
+        "title": "Lorem title",
+        "description": {
+          "desc1": "Contrary to popular belief, Lorem Ipsum is not simply random text",
+          "desc2": "Contrary to popular to",
+          "desc3": "Lorem Ipsum simply"
+        },
+        "date": "2021-06-03",
+        "score": "5.3",
+        "matched":[]
+		  }
+    ]';
 
     $data_source_in_array = json_decode($data_source, true);
 
@@ -73,12 +78,12 @@ class DataController extends Controller
       $description = $inner_data['description'];
       $title = $inner_data['title'];
       $found_in_desc = false;
-
+      $found_data = array();
       if (is_array($description) && !empty($description)) {
         foreach ($description as $k => $desc) {
-          foreach ($param_array as $hehe => $param_str) {
-            if (strpos(strtolower($desc), strtolower($param_str)) === false) {
-              $filtered_data[$key]["description"][$k] = $desc;
+          foreach ($param_array as $param_str) {
+            if (strpos(strtolower($desc), strtolower($param_str)) !== false) {
+              $found_data["description"][$k] = $desc;
               $found_in_desc = true;
               continue;
             }
@@ -87,15 +92,18 @@ class DataController extends Controller
       }
 
       if ($found_in_desc) {
-        $filtered_data[$key]["title"] = $title;
+        $found_data["title"] = $title;
       } else {
         foreach ($param_array as $param_str) {
-          if (strpos(strtolower($title), strtolower($param_str))) {
-            $filtered_data[$key]["title"] = $title;
-            $filtered_data[$key]["description"] = "";
+          if (strpos(strtolower($title), strtolower($param_str)) !== false) {
+            $found_data["title"] = $title;
+            $found_data["description"] = "";
             break;
           }
         }
+      }
+      if (!empty($found_data)) {
+        $filtered_data[] = $found_data;
       }
     }
 
