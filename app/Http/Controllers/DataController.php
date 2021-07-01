@@ -3,35 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Http\JsonResponse;
 
 class DataController extends Controller
 {
-    public function get()
-    {
-    	$data = [
-    		'0' => [
-    			'title' => 'Test',
-    			'Desc'  => [
-    				'0' => 'desc1',
-    				'1' => 'desc2',
-    			]
-    		],
-    		'1' => [
-    			'title' => 'Test1',
-    			'Desc'  => [
-    				'0' => 'desc11',
-    				'1' => 'desc22',
-    			]
-    		]
-    	];
-    	return $data;
-    }
+  public function get()
+  {
+    $data = [
+      '0' => [
+        'title' => 'Test',
+        'Desc'  => [
+          '0' => 'desc1',
+          '1' => 'desc2',
+        ]
+      ],
+      '1' => [
+        'title' => 'Test1',
+        'Desc'  => [
+          '0' => 'desc11',
+          '1' => 'desc22',
+        ]
+      ]
+    ];
+    return $data;
+  }
 
-    public function filter($param = '')
-    {
-		$data_source = '[{
+  public function filter($param = '')
+  {
+    $data_source = '[{
 			"id": 1,
 			"title": "Lorem ipsum",
 			"description": {
@@ -64,42 +63,46 @@ class DataController extends Controller
 			"date": "2021-06-03",
 			"score": "5.3"
 		  }]';
-		
-		$data_source_in_array = json_decode($data_source, true);
 
-		$param_array = explode(" ", $param);
+    $data_source_in_array = json_decode($data_source, true);
 
-		$filtered_data = array();
-		foreach($data_source_in_array as $key => $inner_data){
-			$description = $inner_data['description'];
-			$title = $inner_data['title'];
-			$found_in_desc = false;
+    $param_array = explode(" ", $param);
 
-			if(is_array($description) && !empty($description)){
-				foreach($description as $k => $desc){
-					foreach($param_array as $hehe => $param_str){
-						if(strpos(strtolower($desc), strtolower($param_str)) === false){
-							$filtered_data[$key]["description"][$k] = $desc;
-							$found_in_desc = true;
-							continue;
-						}
-					}
-				}
-			}
+    $filtered_data = array();
+    foreach ($data_source_in_array as $key => $inner_data) {
+      $description = $inner_data['description'];
+      $title = $inner_data['title'];
+      $found_in_desc = false;
 
-			if($found_in_desc){
-				$filtered_data[$key]["title"] = $title;
-			}else{
-				foreach($param_array as $param_str){
-					if(strpos(strtolower($title), strtolower($param_str))){
-						$filtered_data[$key]["title"] = $title;
-						$filtered_data[$key]["description"] = "";
-						break;
-					}
-				}
-			}
-		}
+      if (is_array($description) && !empty($description)) {
+        foreach ($description as $k => $desc) {
+          foreach ($param_array as $hehe => $param_str) {
+            if (strpos(strtolower($desc), strtolower($param_str)) === false) {
+              $filtered_data[$key]["description"][$k] = $desc;
+              $found_in_desc = true;
+              continue;
+            }
+          }
+        }
+      }
 
-		return $filtered_data;
+      if ($found_in_desc) {
+        $filtered_data[$key]["title"] = $title;
+      } else {
+        foreach ($param_array as $param_str) {
+          if (strpos(strtolower($title), strtolower($param_str))) {
+            $filtered_data[$key]["title"] = $title;
+            $filtered_data[$key]["description"] = "";
+            break;
+          }
+        }
+      }
     }
+
+    return response()->json([
+      'success' => true,
+      'message' => '',
+      'data' => $filtered_data
+    ], 200);
+  }
 }
