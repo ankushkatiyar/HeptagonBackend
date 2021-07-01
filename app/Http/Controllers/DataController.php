@@ -77,6 +77,10 @@ class DataController extends Controller
     foreach ($data_source_in_array as $key => $inner_data) {
       $description = $inner_data['description'];
       $title = $inner_data['title'];
+      $date = $inner_data['date'];
+      $score = $inner_data['score'];
+      $matched = $inner_data['matched'];
+
       $found_in_desc = false;
       $found_data = array();
       if (is_array($description) && !empty($description)) {
@@ -93,11 +97,17 @@ class DataController extends Controller
 
       if ($found_in_desc) {
         $found_data["title"] = $title;
+        $found_data["date"] = $date;
+        $found_data["score"] = $score;
+        $found_data["matched"] = $matched;
       } else {
         foreach ($param_array as $param_str) {
           if (strpos(strtolower($title), strtolower($param_str)) !== false) {
             $found_data["title"] = $title;
             $found_data["description"] = "";
+            $found_data["date"] = $date;
+            $found_data["score"] = $score;
+            $found_data["matched"] = $matched;
             break;
           }
         }
